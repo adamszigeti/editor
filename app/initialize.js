@@ -61,6 +61,8 @@ import {initialize_canvas, render_frame} from "/app/render.js";
     };
 
     const indent_detector_regex = /\S|$/;
+    const punctuation_regex = /([\'\"]+|[\+\-\*\/\%\=\&\^\|\<\>\!]+|[\.\,\;\(\)\{\}\[\]]+|\s+|\w+)/;
+    const reverse_punctuation_regex = /([\'\"]+|[\+\-\*\/\%\=\&\^\|\<\>\!]+|[\.\,\;\(\)\{\}\[\]]+|\s+|\w+)$/;
     window.onkeydown = async function (event) {
         const buffer = application.buffers[application.current_buffer];
         const caret = buffer.caret;
@@ -71,18 +73,60 @@ import {initialize_canvas, render_frame} from "/app/render.js";
 
         switch (event.key) {
             case "ArrowUp":
+                if (true === event.ctrlKey) {
+                    let i;
+                    for (i = caret.line - 1; 0 <= i; i--) {
+                        if (0 === buffer.lines[i].value.length) {
+                            buffers.move_caret_vertically(buffer, -1 * (caret.line - i));
+                            break;
+                        }
+                    }
+                    
+                    if (i <= 0) {
+                        buffers.move_caret_vertically(buffer, -1 * caret.line);
+                    }
+                    break;
+                }
                 buffers.move_caret_vertically(buffer, -1);
                 break;
 
             case "ArrowDown":
+                if (true === event.ctrlKey) {
+                    let i;
+                    for (i = caret.line + 1; i < buffer.lines.length; i++) {
+                        if (0 === buffer.lines[i].value.length) {
+                            buffers.move_caret_vertically(buffer, i - caret.line);
+                            break;
+                        }
+                    }
+                    
+                    if (i === buffer.lines.length) {
+                        buffers.move_caret_vertically(buffer, (buffer.lines.length - 1) - caret.line);
+                    }
+                    break;
+                }
                 buffers.move_caret_vertically(buffer, 1);
                 break;
 
             case "ArrowLeft":
+                if (true === event.ctrlKey) {
+                    const rest = buffer.lines[caret.line].value.slice(0, caret.column);
+                    const result = rest.match(reverse_punctuation_regex);
+                    const next_boundary = result ? result[0].length : 0;
+                    buffers.move_caret_horizontally(buffer, -1 * next_boundary);
+                    break;
+                }
                 buffers.move_caret_horizontally(buffer, -1);
                 break;
 
             case "ArrowRight":
+                if (true === event.ctrlKey) {
+                    const rest = buffer.lines[caret.line].value.slice(caret.column);
+                    const result = rest.match(punctuation_regex);
+                    const next_boundary = result ? result[0].length : 0;
+                    buffers.move_caret_horizontally(buffer, next_boundary);
+                    break;
+                }
                 buffers.move_caret_horizontally(buffer, 1);
                 break;
 
