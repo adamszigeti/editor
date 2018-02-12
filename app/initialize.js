@@ -60,11 +60,14 @@ import {initialize_canvas, render_frame} from "/app/render.js";
         initialize_canvas(canvas, context, application);
     };
 
+    const indent_detector_regex = /\S|$/;
     window.onkeydown = async function (event) {
         const buffer = application.buffers[application.current_buffer];
         const caret = buffer.caret;
         const settings = application.settings;
         const indent_level = buffer.lines[caret.line].indent_level;
+        const spaces_till_first_char = buffer.lines[caret.line].value.search(indent_detector_regex);
+        let chars_to_delete = 0;
 
         switch (event.key) {
             case "ArrowUp":
@@ -101,7 +104,14 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 return;
 
             case "Tab":
-                const indentation = ' '.repeat(settings.text.indent_size);
+                let chars_to_insert = settings.text.indent_size;
+                if (0 < indent_level && caret.column <= spaces_till_first_char) {
+                    let remainder = caret.column % settings.text.indent_size;
+                    chars_to_insert = settings.text.indent_size - remainder;
+                }
+
+                const indentation = ' '.repeat(chars_to_insert);
+                buffer.lines[caret.line].indent_level += 1;
                 buffers.insert_at_caret(buffer, indentation);
                 break;
 
@@ -118,7 +128,13 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 break;
 
             case "Delete":
-                buffers.delete_char(buffer, 1);
+                chars_to_delete = 1;
+                if (0 < indent_level && caret.column <= spaces_till_first_char) {
+                    let remainder = caret.column % settings.text.indent_size;
+                    chars_to_delete = settings.text.indent_size - remainder;
+                }
+                
+                buffers.delete_char(buffer, chars_to_delete);
                 break;
 
             case "Backspace":
@@ -126,7 +142,15 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                     buffers.remove_current_line(buffer);
                     break;
                 }
-                buffers.delete_char(buffer, -1);
+
+                chars_to_delete = -1;
+                if (0 < indent_level && caret.column <= spaces_till_first_char) {
+                    let remainder = caret.column % settings.text.indent_size;
+                    chars_to_delete = -1 * (remainder || settings.text.indent_size);
+                    buffer.lines[caret.line].indent_level -= 1;
+                }
+
+                buffers.delete_char(buffer, chars_to_delete);
                 break;
 
             case "F1":

@@ -9,7 +9,11 @@ export function append_line(buffer) {
     buffer.lines[caret.line].value = line;
 
     const next_line = caret.line + 1;
-    buffer.lines = [...lines.slice(0, next_line), {value: new_line}, ...lines.slice(next_line)];
+    buffer.lines = [
+        ...lines.slice(0, next_line),
+        {value: new_line, indent_level: 0},
+        ...lines.slice(next_line)
+    ];
     move_caret_vertically(buffer, 1);
     move_caret_horizontally(buffer, -1 * caret.column);
 }
@@ -41,11 +45,11 @@ export function delete_char(buffer, direction = -1) {
     let line = buffer.lines[caret.line].value;
 
     if (direction < 0) {
-        line = line.slice(0, caret.column - 1) + line.slice(caret.column);
+        line = line.slice(0, caret.column + direction) + line.slice(caret.column);
         move_caret_horizontally(buffer, direction);
     }
     else {
-        line = line.slice(0, caret.column) + line.slice(caret.column + 1);
+        line = line.slice(0, caret.column) + line.slice(caret.column + direction);
     }
 
     buffer.lines[caret.line].value = line;
