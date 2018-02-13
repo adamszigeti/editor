@@ -51,7 +51,14 @@ export async function render_frame(context, application) {
         draw_text(context, theme.font, current_buffer.lines[i].value, point(0, i * measures.leading));
     }
 
-    draw_caret(context, measures, theme.caret, theme.letter_under_caret, buffers.get_letter_at_caret(current_buffer), current_buffer.caret)
+    draw_caret(
+        context,
+        measures, 
+        theme.caret,
+        theme.letter_under_caret,
+        buffers.get_letter_at_caret(current_buffer),
+        current_buffer.caret
+    );
 }
 
 

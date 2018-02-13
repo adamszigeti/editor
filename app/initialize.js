@@ -153,26 +153,14 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 buffers.delete_char(buffer, chars_to_delete);
                 break;
 
-            case "F1":
-            case "F2":
-            case "F3":
-            case "F4":
-            case "F5":
-            case "F6":
-            case "F7":
-            case "F8":
-            case "F9":
-            case "F10":
-            case "F11":
-            case "F12":
-                return;
-
             default:
                 if ('p' === event.key && true === event.ctrlKey) {
                     console.log("Ctrl+P!");
                     break;
                 }
-                buffers.insert_at_caret(buffer, event.key);
+                else if (1 === event.key) {
+                    buffers.insert_at_caret(buffer, event.key);
+                }
                 break;
         }
 
