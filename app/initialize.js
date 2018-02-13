@@ -75,7 +75,18 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 break;
 
             case "ArrowDown":
-                buffers.move_caret_vertically(buffer, 1);
+                let lines_to_move_down = 1;
+                if (true === event.ctrlKey) {
+                    let i = caret.line + 1;
+                    const lines = buffer.lines;
+                    const length = lines.length - 1;
+                    for (i; i < length; i++) {
+                        if ('' === lines[i].value) break;
+                    }
+                
+                    lines_to_move_down = i - caret.line;
+                }
+                buffers.move_caret_vertically(buffer, lines_to_move_down);
                 break;
 
             case "ArrowLeft":
