@@ -38,6 +38,22 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 lines: [
                     {
                         indent_level: 0,
+                        value: "package main",
+                    },
+                    {
+                        indent_level: 0,
+                        value: "",
+                    },
+                    {
+                        indent_level: 0,
+                        value: "import \"fmt\"",
+                    },
+                    {
+                        indent_level: 0,
+                        value: "",
+                    },
+                    {
+                        indent_level: 0,
                         value: "func main() {",
                     },
                     {
@@ -158,7 +174,7 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                     console.log("Ctrl+P!");
                     break;
                 }
-                else if (1 === event.key) {
+                else if (1 === event.key.length) {
                     buffers.insert_at_caret(buffer, event.key);
                 }
                 break;
