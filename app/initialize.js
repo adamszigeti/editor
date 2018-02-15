@@ -169,6 +169,13 @@ import {initialize_canvas, render_frame} from "/app/render.js";
                 buffers.delete_char(buffer, chars_to_delete);
                 break;
 
+            case ' ':
+                if (0 < indent_level &&  0 === caret.column % settings.text.indent_size && caret.column === spaces_till_first_char) {
+                    buffer.lines[caret.line].indent_level += 1;
+                }
+                buffers.insert_at_caret(buffer, event.key);
+                break;
+
             default:
                 if ('p' === event.key && true === event.ctrlKey) {
                     console.log("Ctrl+P!");
