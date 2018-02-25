@@ -166,7 +166,7 @@ import {initialize_canvas, render_frame} from "/app/render.js";
 
             case "Delete":
                 chars_to_delete = 1;
-                if (0 < indent_level && caret.column <= spaces_till_first_char) {
+                if (0 < indent_level && caret.column < spaces_till_first_char) {
                     let remainder = caret.column % settings.text.indent_size;
                     chars_to_delete = settings.text.indent_size - remainder;
                 }
